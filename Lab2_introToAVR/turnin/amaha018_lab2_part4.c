@@ -17,23 +17,20 @@ int main(void) {
 	DDRB = 0x00; PORTB = 0xFF; // Configure port B's 8 pins as inputs
 	DDRC = 0x00; PORTC = 0xFF; // Configure port C's 8 pins as inputs
 	DDRD = 	0xFF; PORTD = 0x00; // Configure port D's 8 pins as outputs
+	unsigned char total, eWeight = 0, balance = 0;
 	while(1) {
 		// first set PORTD to A+B+C
-		PORTD = PINA + PINB + PINC;
-
+		total = PINA + PINB + PINC;
+		
 		// check if A+B+C > 140, if yes then set PD0 to 1, 0 otherwise
-		if(PINA + PINB + PINC > 140){
-			PORTD = PIND | 0x01;
-		} else{
-			PORTD = PIND & 0xFE; 
-		}
+		if(total > 140)
+			eWeight = 1;
 
 		//check if abs(A - C) > 80, if yes then set PD1 to 1, 0 otherwise
-		if(abs(PINA - PINC) > 80){
-			PORTD = PIND | 0x02;
-		} else{
-			PORTD = PIND & 0xFD; 
-		}
+		if(abs(PINA - PINC) > 80)
+			balance = 2;
+
+		PORTD = (total & 0x00FC) | eWeight | balance;
 
 	}
 	return 1;
